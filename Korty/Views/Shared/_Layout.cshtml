@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Korty</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar is-primary">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div id="navbarMenu" class="navbar-menu">
+                    <div class="navbar-start">
+                        <a class="navbar-item" asp-area="" asp-controller="Home" asp-action="Index">Strona główna</a>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a class="navbar-item" asp-area="" asp-controller="Reservations" asp-action="Index">Moje rezerwacje</a>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="navbar-item" asp-area="" asp-controller="Courts" asp-action="Index">Korty</a>
+                        }
+             
+                    </div>
+                    <div class="navbar-end">
+                        <partial name="_LoginPartial" />
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="section">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            &copy; 2025 - Korty
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const burger = document.querySelector('.navbar-burger');
+            const menu = document.querySelector('#navbarMenu');
+            if (burger && menu) {
+                burger.addEventListener('click', () => {
+                    burger.classList.toggle('is-active');
+                    menu.classList.toggle('is-active');
+                });
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
