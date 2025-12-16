@@ -1,0 +1,54 @@
+@model Korty.DTOs.ReservationDTO
+
+@{
+    ViewData["Title"] = "Szczegóły rezerwacji";
+}
+
+<div class="container">
+    <h1 class="title">Szczegóły rezerwacji</h1>
+
+    <div class="box">
+        <div class="content">
+            <p><strong>Kort:</strong> @Model.CourtName</p>
+            <p><strong>Data:</strong> @Model.Date.ToString("dd.MM.yyyy")</p>
+            <p><strong>Godzina:</strong> @Model.StartTime.ToString(@"HH\:mm") - @Model.EndTime.ToString(@"HH\:mm")</p>
+            <p><strong>Status:</strong> 
+                @if (Model.Status == "Active")
+                {
+                    <span class="tag is-success">Aktywna</span>
+                }
+                else
+                {
+                    <span class="tag is-danger">Anulowana</span>
+                }
+            </p>
+            <p><strong>Data utworzenia:</strong> @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+            @if (Model.CancelledAt.HasValue)
+            {
+                <p><strong>Data anulowania:</strong> @Model.CancelledAt.Value.ToString("dd.MM.yyyy HH:mm")</p>
+            }
+        </div>
+    </div>
+
+    <div class="field is-grouped">
+        @if (Model.Status == "Active")
+        {
+            <div class="control">
+                <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="button is-danger" 
+                            onclick="return confirm('Czy na pewno chcesz anulować tę rezerwację?');">
+                        Anuluj rezerwację
+                    </button>
+                </form>
+            </div>
+        }
+        <div class="control">
+            <a class="button is-light" asp-action="Index">Powrót do listy</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

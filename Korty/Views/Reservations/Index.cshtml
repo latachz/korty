@@ -1,0 +1,98 @@
+@model IEnumerable<Korty.DTOs.ReservationDTO>
+
+@{
+    ViewData["Title"] = "Moje rezerwacje";
+}
+
+<div class="container">
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <h1 class="title">Moje rezerwacje</h1>
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                <a class="button is-primary" href="/">Nowa rezerwacja</a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="notification is-success is-light">
+            <button class="delete"></button>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="notification is-danger is-light">
+            <button class="delete"></button>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped">
+                <thead>
+                    <tr>
+                        <th>Kort</th>
+                        <th>Data</th>
+                        <th>Godzina</th>
+                        <th>Status</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservation in Model)
+                    {
+                        <tr>
+                            <td>@reservation.CourtName</td>
+                            <td>@reservation.Date.ToString("dd.MM.yyyy")</td>
+                            <td>@reservation.StartTime.ToString(@"HH\:mm") - @reservation.EndTime.ToString(@"HH\:mm")</td>
+                            <td>
+                                @if (reservation.Status == "Active")
+                                {
+                                    <span class="tag is-success">Aktywna</span>
+                                }
+                                else
+                                {
+                                    <span class="tag is-danger">Anulowana</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="buttons">
+                                    <a class="button is-small is-info" asp-action="Details" asp-route-id="@reservation.Id">Szczegóły</a>
+                                    @if (reservation.Status == "Active")
+                                    {
+                                        <form asp-action="Cancel" asp-route-id="@reservation.Id" method="post" style="display: inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="button is-small is-danger" 
+                                                    onclick="return confirm('Czy na pewno chcesz anulować tę rezerwację?');">
+                                                Anuluj
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="notification is-info">
+            Nie masz jeszcze żadnych rezerwacji.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
