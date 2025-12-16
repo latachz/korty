@@ -1,0 +1,158 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Korty.Models.AppUser> SignInManager
+
+@{
+    ViewData["Title"] = "Strona główna";
+    var availabilityList = ViewBag.AvailabilityList as List<Korty.DTOs.CourtAvailabilityDTO> ?? new List<Korty.DTOs.CourtAvailabilityDTO>();
+    var selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+
+    var earliestOpeningHour = ViewBag.EarliestOpeningHour as TimeOnly? ?? new TimeOnly(6, 0, 0);
+    var latestClosingHour = ViewBag.LatestClosingHour as TimeOnly? ?? new TimeOnly(23, 0, 0);
+    var baseEarliestOpeningHour = ViewBag.BaseEarliestOpeningHour as TimeOnly? ?? new TimeOnly(6, 0, 0);
+    var baseLatestClosingHour = ViewBag.BaseLatestClosingHour as TimeOnly? ?? new TimeOnly(23, 0, 0);
+
+    var timeSlots = new List<TimeOnly>();
+    for (int hour = earliestOpeningHour.Hour; hour < latestClosingHour.Hour; hour++)
+    {
+        timeSlots.Add(new TimeOnly(hour, 0, 0));
+    }
+}
+
+<div class="container">
+    <h1 class="title">System rezerwacji kortów</h1>
+    <p class="subtitle">Sprawdź dostępność wszystkich kortów</p>
+
+    <div class="box mb-5">
+        <h2 class="title is-5">Filtry</h2>
+        <form method="get" asp-action="Index">
+            <div class="field">
+                <label class="label">Data</label>
+                <div class="control">
+                    <input class="input" type="date" name="date" value="@selectedDate.ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")" required>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Godzina rozpoczęcia</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="startHour">
+                            @for (int hour = baseEarliestOpeningHour.Hour; hour < baseLatestClosingHour.Hour; hour++)
+                            {
+                                @if (hour == earliestOpeningHour.Hour)
+                                {
+                                    <option value="@hour" selected>@($"{hour:D2}:00")</option>
+                                }
+                                else
+                                {
+                                    <option value="@hour">@($"{hour:D2}:00")</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Godzina zakończenia</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="endHour">
+                            @for (int hour = baseEarliestOpeningHour.Hour + 1; hour <= baseLatestClosingHour.Hour; hour++)
+                            {
+                                @if (hour == latestClosingHour.Hour)
+                                {
+                                    <option value="@hour" selected>@($"{hour:D2}:00")</option>
+                                }
+                                else
+                                {
+                                    <option value="@hour">@($"{hour:D2}:00")</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary" type="submit">Filtruj</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (availabilityList.Any())
+    {
+        <h2 class="title is-4">Dostępność kortów - @selectedDate.ToString("dd.MM.yyyy")</h2>
+        
+        <div class="table-container">
+            <table class="table is-bordered is-striped is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Godzina</th>
+                        @foreach (var court in availabilityList)
+                        {
+                            <th>@court.CourtName</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var timeSlot in timeSlots)
+                    {
+                        var slotEnd = timeSlot.AddHours(1);
+                        <tr>
+                            <td><strong>@($"{timeSlot.Hour:D2}:{timeSlot.Minute:D2}") - @($"{slotEnd.Hour:D2}:{slotEnd.Minute:D2}")</strong></td>
+                            @foreach (var court in availabilityList)
+                            {
+                                var isWithinOpeningHours = timeSlot >= court.OpeningHour && slotEnd <= court.ClosingHour;
+                                var isReserved = isWithinOpeningHours && court.ReservedTimeRanges.Any(r => 
+                                    timeSlot < r.EndTime && slotEnd > r.StartTime
+                                );
+                                <td>
+                                    @if (!isWithinOpeningHours)
+                                    {
+                                        <span class="tag is-light is-medium">Zamknięte</span>
+                                    }
+                                    else if (isReserved)
+                                    {
+                                        <span class="tag is-danger is-medium">Niedostępne</span>
+                                    }
+                                    else
+                                    {
+                                        var startTimeStr = $"{timeSlot.Hour:D2}:{timeSlot.Minute:D2}";
+                                        var endTimeStr = $"{slotEnd.Hour:D2}:{slotEnd.Minute:D2}";
+                                        @if (SignInManager.IsSignedIn(User))
+                                        {
+                                            <a asp-controller="Reservations" 
+                                               asp-action="Create" 
+                                               asp-route-courtId="@court.CourtId"
+                                               asp-route-date="@selectedDate.ToString("yyyy-MM-dd")"
+                                               asp-route-startTime="@startTimeStr"
+                                               asp-route-endTime="@endTimeStr"
+                                               class="tag is-success is-medium"
+                                               style="cursor: pointer; text-decoration: none;">
+                                                Dostępne
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="tag is-success is-medium" title="Zaloguj się, aby zarezerwować">Dostępne</span>
+                                        }
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="notification is-info">
+            Brak dostępnych kortów.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
