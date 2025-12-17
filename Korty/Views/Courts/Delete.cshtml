@@ -1,0 +1,40 @@
+@model Korty.Models.Court
+
+@{
+    ViewData["Title"] = "Usuń kort";
+}
+
+<div class="container">
+    <h1 class="title">Usuń kort</h1>
+
+    <div class="notification is-danger is-light">
+        <h2 class="subtitle">Czy na pewno chcesz usunąć ten kort?</h2>
+    </div>
+
+    <div class="box">
+        <div class="content">
+            <p><strong>Nazwa:</strong> @Model.Name</p>
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <p><strong>Opis:</strong> @Model.Description</p>
+            }
+            <p><strong>Status:</strong> @(Model.IsActive ? "Aktywny" : "Nieaktywny")</p>
+        </div>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="field is-grouped">
+            <div class="control">
+                <button type="submit" class="button is-danger">Usuń</button>
+            </div>
+            <div class="control">
+                <a class="button is-light" asp-action="Index">Anuluj</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

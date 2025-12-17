@@ -1,0 +1,70 @@
+@model Korty.Models.Court
+
+@{
+    ViewData["Title"] = "Edytuj kort";
+}
+
+<div class="container">
+    <h1 class="title">Edytuj kort</h1>
+
+    <div class="box">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="notification is-danger is-light"></div>
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="field">
+                <label class="label" asp-for="Name"></label>
+                <div class="control">
+                    <input class="input" asp-for="Name" placeholder="Nazwa kortu" />
+                </div>
+                <span asp-validation-for="Name" class="help is-danger"></span>
+            </div>
+
+            <div class="field">
+                <label class="label" asp-for="Description"></label>
+                <div class="control">
+                    <textarea class="textarea" asp-for="Description" placeholder="Opis kortu"></textarea>
+                </div>
+                <span asp-validation-for="Description" class="help is-danger"></span>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <label class="checkbox">
+                        <input type="checkbox" asp-for="IsActive" />
+                        Kort jest aktywny
+                    </label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" asp-for="OpeningHour"></label>
+                <div class="control">
+                    <input class="input" type="time" asp-for="OpeningHour" />
+                </div>
+                <span asp-validation-for="OpeningHour" class="help is-danger"></span>
+            </div>
+
+            <div class="field">
+                <label class="label" asp-for="ClosingHour"></label>
+                <div class="control">
+                    <input class="input" type="time" asp-for="ClosingHour" />
+                </div>
+                <span asp-validation-for="ClosingHour" class="help is-danger"></span>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button type="submit" class="button is-primary">Zapisz</button>
+                </div>
+                <div class="control">
+                    <a class="button is-light" asp-action="Index">Anuluj</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

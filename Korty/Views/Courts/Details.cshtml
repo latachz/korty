@@ -1,0 +1,93 @@
+@model Korty.DTOs.CourtDTO
+@{
+    ViewData["Title"] = "Szczegóły kortu";
+    var selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+    var availability = ViewBag.Availability as Korty.DTOs.CourtAvailabilityDTO;
+}
+
+<div class="container">
+    <h1 class="title">@(Model?.Name ?? "Nieznany kort")</h1>
+
+    @if (Model != null && !string.IsNullOrEmpty(Model.Description))
+    {
+        <p class="subtitle">@Model.Description</p>
+    }
+
+    <div class="tags mb-4">
+        @if (Model?.IsActive == true)
+        {
+            <span class="tag is-success is-large">Dostępny</span>
+        }
+        else
+        {
+            <span class="tag is-danger is-large">Niedostępny</span>
+        }
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="box mb-4">
+            <h2 class="title is-5">Godziny otwarcia</h2>
+            <p class="subtitle is-6">
+                <strong>Od:</strong> @Model.OpeningHour.ToString(@"HH\:mm") 
+                <strong>Do:</strong> @Model.ClosingHour.ToString(@"HH\:mm")
+            </p>
+        </div>
+        <div class="box">
+            <h2 class="title is-5">Rezerwacje</h2>
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Godzina rozpoczęcia</th>
+                        <th>Godzina zakończenia</th>
+                        <th>Status</th>
+                        <th>Użytkownik</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservation in Model.Reservations)
+                    {
+                        <tr>
+                            <td>@reservation.Date.ToString("dd.MM.yyyy")</td>
+                            <td>@reservation.StartTime.ToString(@"HH\:mm")</td>
+                            <td>@reservation.EndTime.ToString(@"HH\:mm")</td>
+                            <td>
+                                @if (reservation.Status == "Active")
+                                {
+                                    <span class="tag is-success">Aktywna</span>
+                                }
+                                else
+                                {
+                                    <span class="tag is-danger">Anulowana</span>
+                                }
+                            </td>
+                            <td>
+                                @reservation.UserEmail
+                            <td>
+                                <a class="button is-small is-info" asp-controller="Reservations" asp-action="Details" asp-route-id="@reservation.Id">Szczegóły</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+</div>
+
+    <div class="mt-4">
+        <div class="field is-grouped">
+            <div class="control">
+                <a class="button" asp-action="Index">Powrót do listy</a>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
