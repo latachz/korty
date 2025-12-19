@@ -24,17 +24,11 @@ namespace Korty.Controllers
         }
 
         public async Task<IActionResult> Index()
-        {
-            var users = _context.Users;
-            if (users.Count() == 1)
-            {
-                var me = await _userManager.FindByIdAsync(GetUserId());
+        {   
+            var me = await _userManager.FindByIdAsync(GetUserId());
 
-                await _userManager.AddToRoleAsync(me, "Admin");
-            } else
-            {
-                Console.WriteLine(users.Count());
-            }
+            await _userManager.AddToRoleAsync(me, "Admin");
+         
             return View();
         }
     }

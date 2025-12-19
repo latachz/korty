@@ -18,6 +18,12 @@ namespace Korty.DTOs
         
         [Display(Name = "Email użytkownika")]
         public string UserEmail { get; set; } = string.Empty;
+
+        [Display(Name = "Imię użytkownika")]
+        public string UserFirstName { get; set; } = string.Empty;
+
+        [Display(Name = "Nazwisko użytkownika")]
+        public string UserLastName { get; set; } = string.Empty;
         
         [Display(Name = "Data")]
         [DataType(DataType.Date)]
@@ -49,6 +55,8 @@ namespace Korty.DTOs
             CourtName = reservation.Court?.Name ?? string.Empty;
             UserId = reservation.UserId;
             UserEmail = reservation.User?.Email ?? string.Empty;
+            UserFirstName = reservation.User?.FirstName ?? string.Empty;
+            UserLastName = reservation.User?.LastName ?? string.Empty;
             Date = reservation.Date;
             StartTime = reservation.StartTime;
             EndTime = reservation.EndTime;

@@ -1,0 +1,73 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container">
+    <div class="columns is-centered">
+        <div class="column is-half-tablet is-one-third-desktop">
+            <div class="box">
+                <h1 class="title is-3 has-text-centered mb-5">@ViewData["Title"]</h1>
+                <p class="subtitle is-5 has-text-centered mb-5">Zaloguj się do konta</p>
+
+                <form id="account" method="post">
+                    <div asp-validation-summary="ModelOnly" class="notification is-danger" role="alert"></div>
+
+                    <div class="field">
+                        <label asp-for="Input.Email" class="label">Email</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.Email" class="input" type="email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.Email" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.Password" class="label">Hasło</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.Password" class="input" type="password" autocomplete="current-password" aria-required="true" placeholder="Hasło" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input type="checkbox" asp-for="Input.RememberMe" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <button id="login-submit" type="submit" class="button is-primary is-fullwidth is-medium">Zaloguj</button>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="control has-text-centered">
+                            <p class="mb-3">
+                                <a id="forgot-password" asp-page="./ForgotPassword">Zapomniałeś hasła?</a>
+                            </p>
+                            <p>
+                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Zarejestruj się jako nowy użytkownik</a>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

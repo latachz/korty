@@ -1,0 +1,85 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container">
+    <div class="columns is-centered">
+        <div class="column is-half-tablet is-one-third-desktop">
+            <div class="box">
+                <h1 class="title is-3 has-text-centered mb-5">@ViewData["Title"]</h1>
+                <p class="subtitle is-5 has-text-centered mb-5">Stwórz nowe konto</p>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="notification is-danger" role="alert"></div>
+
+                    <div class="field">
+                        <label asp-for="Input.Email" class="label">Email</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.Email" class="input" type="email" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.Email" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.FirstName" class="label">Imię</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.FirstName" class="input" type="text" autocomplete="firstname" aria-required="true" placeholder="Imię" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.FirstName" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.LastName" class="label">Nazwisko</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.LastName" class="input" type="text" autocomplete="lastname" aria-required="true" placeholder="Nazwisko" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.LastName" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.Password" class="label">Hasło</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.Password" class="input" type="password" autocomplete="new-password" aria-required="true" placeholder="Hasło" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Input.ConfirmPassword" class="label">Potwierdź hasło</label>
+                        <div class="control has-icons-left">
+                            <input asp-for="Input.ConfirmPassword" class="input" type="password" autocomplete="new-password" aria-required="true" placeholder="Potwierdź hasło" />
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.ConfirmPassword" class="help is-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <button id="registerSubmit" type="submit" class="button is-primary is-fullwidth is-medium">Zarejestruj</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

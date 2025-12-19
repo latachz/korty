@@ -1,0 +1,33 @@
+@inject SignInManager<AppUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+    var indexActive = ManageNavPages.IndexNavClass(ViewContext) == "active" ? "is-active" : "";
+    var changePasswordActive = ManageNavPages.ChangePasswordNavClass(ViewContext) == "active" ? "is-active" : "";
+}
+<aside class="menu">
+    <p class="menu-label">
+        Zarządzanie kontem
+    </p>
+    <ul class="menu-list">
+        <li>
+            <a class="@indexActive" asp-page="./Index">
+                <span class="icon-text">
+                    <span class="icon">
+                        <i class="fas fa-user"></i>
+                    </span>
+                    <span>Profil</span>
+                </span>
+            </a>
+        </li>
+        <li>
+            <a class="@changePasswordActive" id="change-password" asp-page="./ChangePassword">
+                <span class="icon-text">
+                    <span class="icon">
+                        <i class="fas fa-key"></i>
+                    </span>
+                    <span>Hasło</span>
+                </span>
+            </a>
+        </li>
+    </ul>
+</aside>

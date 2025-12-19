@@ -42,7 +42,8 @@
                         <th>Godzina rozpoczęcia</th>
                         <th>Godzina zakończenia</th>
                         <th>Status</th>
-                        <th>Użytkownik</th>
+                        <th>Imię i nazwisko</th>
+                        <th>Email</th>
                         <th>Akcje</th>
                     </tr>
                 </thead>
@@ -63,8 +64,8 @@
                                     <span class="tag is-danger">Anulowana</span>
                                 }
                             </td>
-                            <td>
-                                @reservation.UserEmail
+                            <td>@reservation.UserFirstName @reservation.UserLastName</td>
+                            <td>@reservation.UserEmail</td>
                             <td>
                                 <a class="button is-small is-info" asp-controller="Reservations" asp-action="Details" asp-route-id="@reservation.Id">Szczegóły</a>
                             </td>
@@ -87,7 +88,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
