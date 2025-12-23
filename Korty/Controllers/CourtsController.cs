@@ -26,6 +26,35 @@ namespace Korty.Controllers
                 .ToListAsync();
             
             var courtDTOs = courts.Select(c => new CourtDTO(c)).ToList();
+            
+            var courtStatistics = await _context.Reservations
+                .Include(r => r.Court)
+                .GroupBy(r => new { r.CourtId, r.Court!.Name })
+                .Select(g => new
+                {
+                    CourtId = g.Key.CourtId,
+                    CourtName = g.Key.Name,
+                    TotalReservations = g.Count(),
+                    ActiveReservations = g.Count(r => r.Status == "Active"),
+                    CancelledReservations = g.Count(r => r.Status == "Cancelled"),
+                    Reservations = g.ToList()
+                })
+                .ToListAsync();
+            
+            var courtStatisticsDTOs = courtStatistics.Select(g => new CourtStatisticsDTO
+            {
+                CourtId = g.CourtId,
+                CourtName = g.CourtName,
+                TotalReservations = g.TotalReservations,
+                ActiveReservations = g.ActiveReservations,
+                CancelledReservations = g.CancelledReservations,
+                TotalHours = g.Reservations.Sum(r => (r.EndTime - r.StartTime).TotalHours)
+            })
+            .OrderByDescending(s => s.TotalReservations)
+            .ToList();
+            
+            ViewBag.CourtStatistics = courtStatisticsDTOs;
+            
             return View(courtDTOs);
         }
 

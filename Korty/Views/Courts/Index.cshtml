@@ -70,6 +70,38 @@
             Brak dostępnych kortów.
         </div>
     }
+
+    @if (ViewBag.CourtStatistics != null)
+    {
+        <div class="mt-6">
+            <h2 class="title is-4">Statystyki rezerwacji</h2>
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped">
+                    <thead>
+                        <tr>
+                            <th>Kort</th>
+                            <th>Wszystkie rezerwacje</th>
+                            <th>Aktywne</th>
+                            <th>Anulowane</th>
+                            <th>Suma godzin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in (List<Korty.DTOs.CourtStatisticsDTO>)ViewBag.CourtStatistics)
+                        {
+                            <tr>
+                                <td><strong>@stat.CourtName</strong></td>
+                                <td>@stat.TotalReservations</td>
+                                <td><span class="tag is-success">@stat.ActiveReservations</span></td>
+                                <td><span class="tag is-danger">@stat.CancelledReservations</span></td>
+                                <td><strong>@stat.TotalHours.ToString("F1")</strong> h</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>
 
 @section Scripts {
