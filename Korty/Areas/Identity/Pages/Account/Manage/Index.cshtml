@@ -70,6 +70,34 @@
                 </form>
             </div>
         </div>
+        <div class="column">
+            <div class="box">
+                <h2 class="title is-4 mb-4">Zarządzanie rolami</h2>
+                <div class="field">
+                    <label class="label">Rola administratora - tylko dla testów</label>
+                    <div class="control">
+                        @if (Model.IsAdmin)
+                        {
+                            <p class="mb-3">
+                                <span class="tag is-success is-medium">Aktywna</span>
+                            </p>
+                            <form method="post" asp-page-handler="ToggleAdmin">
+                                <button type="submit" class="button is-danger">Wyłącz rolę administratora</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p class="mb-3">
+                                <span class="tag is-light is-medium">Nieaktywna</span>
+                            </p>
+                            <form method="post" asp-page-handler="ToggleAdmin">
+                                <button type="submit" class="button is-success">Włącz rolę administratora</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

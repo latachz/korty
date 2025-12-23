@@ -17,13 +17,16 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public IndexModel(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -38,6 +41,8 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
+
+        public bool IsAdmin { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -57,13 +62,13 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Numer telefonu")]
             public string PhoneNumber { get; set; }
 
-            [Display(Name = "First Name")]
+            [Display(Name = "Imię")]
             public string FirstName { get; set; }
 
-            [Display(Name = "Last Name")]
+            [Display(Name = "Nazwisko")]
             public string LastName { get; set; }
         }
 
@@ -71,12 +76,15 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            IsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName
             };
         }
 
@@ -85,7 +93,7 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Nie udało się załadować użytkownika z ID '{_userManager.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -97,7 +105,7 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Nie udało się załadować użytkownika z ID '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -112,13 +120,62 @@ namespace Korty.Areas.Identity.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Nie udało się ustawić numeru telefonu.";
                     return RedirectToPage();
                 }
             }
 
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                StatusMessage = "Nie udało się zaktualizować profilu.";
+                return RedirectToPage();
+            }
+
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Profil zaktualizowany";
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostToggleAdminAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Nie udało się załadować użytkownika z ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            
+            if (isAdmin)
+            {
+                var result = await _userManager.RemoveFromRoleAsync(user, "Admin");
+                if (result.Succeeded)
+                {
+                    StatusMessage = "Usunięto rolę administratora.";
+                }
+                else
+                {
+                    StatusMessage = "Nie udało się usunąć roli administratora.";
+                }
+            }
+            else
+            {
+                var result = await _userManager.AddToRoleAsync(user, "Admin");
+                if (result.Succeeded)
+                {
+                    StatusMessage = "Dodano rolę administratora.";
+                }
+                else
+                {
+                    StatusMessage = "Nie udało się dodać roli administratora.";
+                }
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
             return RedirectToPage();
         }
     }
