@@ -25,7 +25,7 @@ dotnet watch run
 
 5. Open the app at http://localhost:5251/
 
-## Demo:
+## Demo
 
 <img width="1503" height="804" alt="image" src="https://github.com/user-attachments/assets/8051d38f-5b7d-4be8-8656-76f1bea0f571" />
 <img width="1497" height="804" alt="image" src="https://github.com/user-attachments/assets/3444febe-4991-4ec6-84cb-8fabda8d40ec" />
